@@ -17,7 +17,7 @@
 // Код возьмите из предыдущего домашнего задания
 
 
-const numberOfFilms = prompt('Сколько фильмов вы уже посмотрели?', '');
+const numberOfFilms = +prompt('Сколько фильмов вы уже посмотрели?', '');
 
 
 const personalMovieDB = {
@@ -52,7 +52,6 @@ if (personalMovieDB.count < 10) {
 } else {
     console.log('Произошла ошибка');
 }
-
 
 
 console.log(personalMovieDB);
