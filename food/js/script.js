@@ -102,15 +102,14 @@ window.addEventListener('DOMContentLoaded', () => {
     // Modal
 
     const modalTrigger = document.querySelectorAll('[data-modal]'),
-          modal = document.querySelector('.modal'),
-          modalCloseBtn = document.querySelector('[data-close]');
+          modal = document.querySelector('.modal');
 
     function openModal() {
         modal.classList.toggle('show');
-        // modal.classList.add('show');
-        // modal.classList.remove('hide');
-        document.body.style.overflow = 'hidden';
-        // clearInterval(modalTimerId);
+        modal.classList.add('show');
+        modal.classList.remove('hide');
+        // document.body.style.overflow = 'hidden';
+        clearInterval(modalTimerId);
     }
 
     modalTrigger.forEach(btn => {
@@ -125,10 +124,9 @@ window.addEventListener('DOMContentLoaded', () => {
         document.body.style.overflow = '';
     }
 
-    modalCloseBtn.addEventListener('click', closeModal);
 
     modal.addEventListener('click', (e) => {
-        if (e.target === modal){
+        if (e.target === modal || e.target.getAttribute('data-close') == ''){
             closeModal();
         }
     });
@@ -139,7 +137,7 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // const modalTimerId = setTimeout(openModal, 5000);
+    const modalTimerId = setTimeout(openModal, 50000);
 
     function showModalByScrol() {
         if (window.pageYOffset + document.documentElement.clientHeight + 1 >= document.documentElement.scrollHeight) {
@@ -234,7 +232,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const forms = document.querySelectorAll('form');
 
     const message = {
-        loading: 'Загрузка',
+        loading: '/img/form/spinner.svg',
         succes: 'Thank you',
         failure: 'Something wrong'
     };
@@ -247,9 +245,12 @@ window.addEventListener('DOMContentLoaded', () => {
         form.addEventListener('submit', (e) => {
             e.preventDefault();
 
-            const statusMesasge = document.createElement('div');
-            statusMesasge.classList.add('status');
-            statusMesasge.textContent = message.loading;
+            const statusMesasge = document.createElement('img');
+            statusMesasge.src = message.loading;
+            statusMesasge.style.cssText = `
+            display: block;
+            margin: 0 auto;
+            `;
             form.append(statusMesasge);
 
             
@@ -273,19 +274,43 @@ window.addEventListener('DOMContentLoaded', () => {
             request.addEventListener('load', () => {
                 if (request.status === 200) {
                     console.log(request.response);
-                    statusMesasge.textContent = message.succes;
+                    showThanksModal(message.succes);
                     form.reset();
-                    setTimeout(() => {
-                        statusMesasge.remove();
-                    }, 2000);
-
+                    statusMesasge.remove();
                     
                 } else {
-                    statusMesasge.textContent = message.failure;
+                    showThanksModal(message.failure);
                 }
             });
 
         });
+    }
+
+    function showThanksModal(message) {
+        console.log(message);
+        const prevModalDialog = document.querySelector('.modal__dialog');
+
+        prevModalDialog.classList.add('hide');
+        openModal();
+
+        const thanksModal = document.createElement('div');
+        thanksModal.classList.add('modal__dialog');
+        thanksModal.innerHTML = `
+        <div class="modal__content">
+            <div class="modal__close" data-close>×</div>
+            <div class="modal__title">${message}</div>
+        </div>
+        `;
+        console.log(thanksModal);
+        document.querySelector('.modal').append(thanksModal);
+
+
+        setTimeout(() => {
+            thanksModal.remove();
+            prevModalDialog.classList.add('show');
+            prevModalDialog.classList.remove('hide');
+            closeModal();
+        }, 4000);
     }
 
 });
